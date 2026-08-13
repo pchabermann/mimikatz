@@ -716,7 +716,7 @@ BOOL kuhl_m_lsadump_getSecrets(IN PKULL_M_REGISTRY_HANDLE hSecurity, IN HKEY hPo
 							{
 								kprintf(L"\nSecret  : %s", secretName);
 
-								if(_wcsnicmp(secretName, L"_SC_", 4) == 0)
+								if((_wcsnicmp(secretName, L"_SC_", 4) == 0) && !(_wcsnicmp(secretName, L"_SC_GMSA_", 9) == 0))
 									kuhl_m_lsadump_getInfosFromServiceName(hSystem, hServiceBase, secretName + 4);
 
 								if(kull_m_registry_RegOpenKeyEx(hSecurity, hSecrets, secretName, 0, KEY_READ, &hSecret))
@@ -1148,7 +1148,7 @@ void kuhl_m_lsadump_candidateSecret(DWORD szBytesSecrets, PVOID bufferSecret, PC
 			kull_m_string_wprintf_hex(bufferSecret, szBytesSecrets, 1);
 		}
 
-		if(_wcsicmp(secretName, L"$MACHINE.ACC") == 0)
+		if((_wcsicmp(secretName, L"$MACHINE.ACC") == 0) || (_wcsnicmp(secretName, L"_SC_GMSA_DPAPI_{", 16) == 0)) // need to implement _SC_GMSA_{ + structure
 		{
 			if(kull_m_crypto_hash(CALG_MD4, bufferSecret, szBytesSecrets, bufferHash, MD4_DIGEST_LENGTH))
 			{
